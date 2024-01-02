@@ -255,4 +255,37 @@ contract SimpleSwap is Context, Initializable, ReentrancyGuard{
         uint256 totalAmount = amountIn+fee;
         return totalAmount;
     }
+
+    // ========= Admin functions =========
+    function rescueFunds(address token, uint256 amount) external onlyOwner {
+        IERC20(token).transfer(payable(msg.sender), amount);
+    }
+
+    function setOwner(address _owner) external onlyOwner {
+        require(_owner != address(0), "Owner can't be zero address");
+        owner = _owner;
+    }
+
+    function setSrcToken(address _srcToken) external onlyOwner {
+        require(_srcToken != address(0), "srcToken can't be zero address");
+        srcToken = _srcToken;
+    }
+
+    function setTargetToken(address _targetToken) external onlyOwner {
+        require(_targetToken != address(0), "targetToken can't be zero address");
+        targetToken = _targetToken;
+    }
+
+    function setFeeReceiver(address _receiver) external onlyOwner {
+        require(_receiver != address(0), "fee receiver can't be zero address");
+        feeReceiver = _receiver;
+    }
+
+    function setFee(uint256 _feeRate) external onlyOwner {
+        feeRate = _feeRate;
+    }
+
+    function GetInitializeData(address _owner,address _srcToken,address _targetToken,address _feeReceiver, uint256 _feeRate) public pure returns(bytes memory){
+        return abi.encodeWithSignature("initialize(address,address,address,address,uint256)", _owner,_srcToken,_targetToken,_feeReceiver,_feeRate);
+    }
 }
