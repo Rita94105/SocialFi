@@ -165,8 +165,9 @@ contract Shares is Initializable, Ownable, ReentrancyGuard, ERC721, AirDrop{
         _tokenId++;
 
         emit Trade(msg.sender, _proxiedSymbol, sharesSubject, true, amount, price, protocolFee, subjectFee, supply + amount);
-        (bool success1, ) = protocolFeeDestination.call{value: protocolFee}("");
-        (bool success2, ) = sharesSubject.call{value: subjectFee}("");
+        
+        (bool success1, ) = payable(protocolFeeDestination).call{value: protocolFee}("");
+        (bool success2, ) = payable(sharesSubject).call{value: subjectFee}("");
         require(success1 && success2, "Unable to send funds");
     }
     

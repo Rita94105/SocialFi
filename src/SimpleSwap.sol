@@ -266,16 +266,6 @@ contract SimpleSwap is Context, Initializable, ReentrancyGuard{
         owner = _owner;
     }
 
-    function setSrcToken(address _srcToken) external onlyOwner {
-        require(_srcToken != address(0), "srcToken can't be zero address");
-        srcToken = _srcToken;
-    }
-
-    function setTargetToken(address _targetToken) external onlyOwner {
-        require(_targetToken != address(0), "targetToken can't be zero address");
-        targetToken = _targetToken;
-    }
-
     function setFeeReceiver(address _receiver) external onlyOwner {
         require(_receiver != address(0), "fee receiver can't be zero address");
         feeReceiver = _receiver;

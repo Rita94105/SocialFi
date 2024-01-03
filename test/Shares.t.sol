@@ -47,9 +47,6 @@ contract SharesTest is Test{
         require(proxyShare.balanceOf(owner) == 1, "balanceOf should be 1");
         require(proxyShare.totalSupply() == 1, "totalSupply should be 1");
         require(proxyShare.ownerOf(0) == owner, "token 0 should be belong to owner");
-        console2.log(proxyShare.balanceOf(owner));
-        console2.log(proxyShare.totalSupply());
-        console2.log(proxyShare.ownerOf(0));
         vm.stopPrank();
     }
 
