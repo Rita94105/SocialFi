@@ -84,7 +84,7 @@ contract SharesTest is Test{
     function testAirDropTokens() public{
         vm.startPrank(owner);
         require(token.balanceOf(owner)>= 100 ether,"Not enough tokens to approve");
-        token.approve(address(proxyShare), 100 ether);
+        token.approve(address(proxyShare), type(uint256).max);
         address payable [] memory receivers = new address payable[](1);
         receivers[0] = payable(user1);
         uint[] memory amounts = new uint256[](1);

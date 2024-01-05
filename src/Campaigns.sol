@@ -117,76 +117,10 @@ contract Campaigns is Initializable, Ownable, ReentrancyGuard{
     function getAllCamps(address _creator) public view returns(bytes32[] memory){
         return userCampaigns[_creator];
     }
-    /**
-    * @dev get the Title of a campaign
-    */
-    function getTitle(bytes32 _campaignId) public view returns(string memory){
-        Campaign memory _campaign = campaigns[_campaignId];
-        return _campaign.title;
-    }
-    /**
-    * @dev get the Description of a campaign
-    */
-    function getDescription(bytes32 _campaignId) public view returns(string memory){
-        Campaign memory _campaign = campaigns[_campaignId];
-        return _campaign.description;
-    }
-    /**
-    * @dev get the Start Time of a campaign
-    */
-    function getStartTime(bytes32 _campaignId) public view returns(uint256){
-        Campaign memory _campaign = campaigns[_campaignId];
-        return _campaign.startTime;
-    }
-    /**
-    * @dev get the End Time of a campaign
-    */
-    function getEndTime(bytes32 _campaignId) public view returns(uint256){
-        Campaign memory _campaign = campaigns[_campaignId];
-        return _campaign.endTime;
-    }
-    /**
-    * @dev get the Winners of a campaign
-    */
-    function getWinners(bytes32 _campaignId) public view returns(address[] memory){
-        Campaign memory _campaign = campaigns[_campaignId];
-        return _campaign.winners;
-    }
-    /**
-    * @dev get the Prizes address of a campaign
-    */
-    function getPrizesAddress(bytes32 _campaignId) public view returns(address){
-        Campaign memory _campaign = campaigns[_campaignId];
-        return _campaign.prizes;
-    }
-    /**
-    * @dev get the Total Funds of a campaign
-    */
-    function getTotalFunds(bytes32 _campaignId) public view returns(uint256){
-        Campaign memory _campaign = campaigns[_campaignId];
-        return _campaign.totalFunds;
-    }
-    /**
-    * @dev get the creator address of a campaign
-    */
-    function getCreator(bytes32 _campaignId) public view returns(address){
-        Campaign memory _campaign = campaigns[_campaignId];
-        return _campaign.creator;
-    }
-    /**
-    * @dev get the Status of a campaign
-    */
-    function getStatus(bytes32 _campaignId) public view returns(uint8){
-        Campaign memory _campaign = campaigns[_campaignId];
-        return _campaign.status;
-    }
 
-    /**
-    * @dev get the Balance of a campaign
-    */
-    function getBalance(bytes32 _campaignId) public view returns(uint256){
-        Campaign memory _campaign = campaigns[_campaignId];
-        return _campaign.balance;
+    function getCampaign(bytes32 hash) public view returns (bytes32, string memory, string memory, uint256, uint256, uint256, uint256, address,address[] memory, address payable, uint8) {
+        Campaign storage campaign = campaigns[hash];
+        return (campaign.id, campaign.title, campaign.description, campaign.startTime, campaign.endTime, campaign.totalFunds, campaign.balance, campaign.prizes,campaign.winners, campaign.creator, campaign.status);
     }
 
     function _generateCampHash(address _from,uint256 _totalFunds,address _prizes,uint256 _startTime) internal pure returns(bytes32){

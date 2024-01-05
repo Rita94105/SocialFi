@@ -36,7 +36,7 @@ contract SimpleSwapTest is Test{
         deal(MTM,user1,10 ether);
         vm.startPrank(user1);
         uint256 fee = 5 ether * 8000 / 1e12;
-        IERC20(MTM).approve(address(proxySwap), 10 ether);
+        IERC20(MTM).approve(address(proxySwap), type(uint256).max);
         uint256 amountOut = proxySwap.getAmountOut(5 ether - fee);
         proxySwap.swapExactTokensForTokens(5 ether, 0);
         require(5 ether == IERC20(MTM).balanceOf(user1), "amountOut not equal");
@@ -54,7 +54,7 @@ contract SimpleSwapTest is Test{
         uint256 amountIn = proxySwap.getAmountIn(5 ether);
         uint256 fee = amountIn * 8000 / 1e12;
         require(IERC20(MTM).balanceOf(user1) >= amountIn + fee, "balance not enough");
-        IERC20(MTM).approve(address(proxySwap), 10 ether);
+        IERC20(MTM).approve(address(proxySwap),type(uint256).max);
         proxySwap.swapTokensForExactTokens(5 ether, amountIn + fee);
         require(5 ether == IERC20(TST).balanceOf(user1), "amountOut not equal");
         require(fee == IERC20(MTM).balanceOf(feeReceiver), "fee not equal");
@@ -102,7 +102,7 @@ contract SimpleSwapTest is Test{
         uint256 amountIn = proxySwap.getAmountIn(1 ether);
         uint256 fee = amountIn * 8000 / 1e12;
         require(IERC20(DAI).balanceOf(user1) >= amountIn + fee, "balance not enough");
-        IERC20(DAI).approve(address(proxySwap), 5000 ether);
+        IERC20(DAI).approve(address(proxySwap),type(uint256).max);
         proxySwap.swapTokensForExactETH(1 ether);
         require(1 ether == user1.balance, "Ether balance should be 1 ether");
         require(5000 ether - amountIn - fee == IERC20(DAI).balanceOf(user1), "amountOut not equal");
@@ -117,7 +117,7 @@ contract SimpleSwapTest is Test{
         deal(DAI,user1,1000 ether);
         vm.startPrank(user1);
         uint256 fee = 500 ether * 8000 / 1e12;
-        IERC20(DAI).approve(address(proxySwap), 500 ether);
+        IERC20(DAI).approve(address(proxySwap), type(uint256).max);
         uint256 amountOut = proxySwap.getAmountOut(500 ether - fee);
         proxySwap.swapExactTokensForETH(500 ether, amountOut*95/100);
         require(amountOut == user1.balance, "Ether balance error");
