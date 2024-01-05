@@ -53,7 +53,6 @@ contract SimpleSwapTest is Test{
         vm.startPrank(user1);
         uint256 amountIn = proxySwap.getAmountIn(5 ether);
         uint256 fee = amountIn * 8000 / 1e12;
-        require(IERC20(MTM).balanceOf(user1) >= amountIn + fee, "balance not enough");
         IERC20(MTM).approve(address(proxySwap),type(uint256).max);
         proxySwap.swapTokensForExactTokens(5 ether, amountIn + fee);
         require(5 ether == IERC20(TST).balanceOf(user1), "amountOut not equal");
@@ -85,7 +84,6 @@ contract SimpleSwapTest is Test{
         vm.startPrank(user1);
         uint256 amountIn = proxySwap.getAmountIn(5 ether);
         uint256 fee = amountIn * 8000 / 1e12;
-        require(user1.balance >= amountIn + fee, "balance not enough");
         proxySwap.swapETHForExactTokens{value:amountIn + fee}(5 ether);
         require(fee == feeReceiver.balance, "fee not equal");
         require(5 ether == IERC20(DAI).balanceOf(user1), "DAI balance should be 5 ether");
@@ -101,7 +99,6 @@ contract SimpleSwapTest is Test{
         vm.startPrank(user1);
         uint256 amountIn = proxySwap.getAmountIn(1 ether);
         uint256 fee = amountIn * 8000 / 1e12;
-        require(IERC20(DAI).balanceOf(user1) >= amountIn + fee, "balance not enough");
         IERC20(DAI).approve(address(proxySwap),type(uint256).max);
         proxySwap.swapTokensForExactETH(1 ether);
         require(1 ether == user1.balance, "Ether balance should be 1 ether");

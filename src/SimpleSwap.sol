@@ -56,9 +56,6 @@ contract SimpleSwap is Context, Initializable, ReentrancyGuard{
     ) external payable returns(uint256 _returnAmount) {
         uint256 fee = amountIn * feeRate / _FEE_MOLECULAR;
         uint256 swapAmount = amountIn- fee;
-        
-        require(IERC20(srcToken).balanceOf(msg.sender) >= amountIn, "Insufficient token balance");
-        require(IERC20(srcToken).allowance(msg.sender, address(this)) >= amountIn, "Approve Insufficient balance");
 
         IERC20(srcToken).transferFrom(msg.sender, address(this), amountIn);
         IERC20(srcToken).transfer(feeReceiver, fee);
@@ -89,9 +86,6 @@ contract SimpleSwap is Context, Initializable, ReentrancyGuard{
         require(amountIn <= amountInMax, "amountIn is larger than amountInMax");
         uint256 fee = amountIn * feeRate / _FEE_MOLECULAR;
         uint256 totalAmount = amountIn+fee;
-        
-        require(IERC20(srcToken).balanceOf(msg.sender) >= totalAmount, "Insufficient token balance");
-        require(IERC20(srcToken).allowance(msg.sender, address(this)) >= totalAmount, "Approve Insufficient balance");
 
         IERC20(srcToken).transferFrom(msg.sender, address(this), totalAmount);
         IERC20(srcToken).transfer(feeReceiver, fee);
@@ -169,9 +163,6 @@ contract SimpleSwap is Context, Initializable, ReentrancyGuard{
         uint256 amountIn = getAmountIn(amountOut);
         uint256 fee = amountIn * feeRate / _FEE_MOLECULAR;
         uint256 totalAmount = amountIn+fee;
-        
-        require(IERC20(srcToken).balanceOf(msg.sender) >= totalAmount, "Insufficient token balance");
-        require(IERC20(srcToken).allowance(msg.sender, address(this)) >= totalAmount, "Approve Insufficient balance");
 
         IERC20(srcToken).transferFrom(msg.sender, address(this), totalAmount);
         IERC20(srcToken).transfer(feeReceiver, fee);
@@ -201,9 +192,6 @@ contract SimpleSwap is Context, Initializable, ReentrancyGuard{
         uint256 fee = amountIn * feeRate / _FEE_MOLECULAR;
         uint256 swapAmount = amountIn- fee;
         require(swapAmount >= amountOutMin, "amountOutMin is larger than swapAmount");
-        
-        require(IERC20(srcToken).balanceOf(msg.sender) >= amountIn, "Insufficient token balance");
-        require(IERC20(srcToken).allowance(msg.sender, address(this)) >= amountIn, "Approve Insufficient balance");
 
         IERC20(srcToken).transferFrom(msg.sender, address(this), amountIn);
         IERC20(srcToken).transfer(feeReceiver, fee);
