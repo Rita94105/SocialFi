@@ -2,12 +2,12 @@
 pragma solidity ^0.8.19;
 
 import {Test, console2} from "forge-std/Test.sol";
-import {SwapProxy} from "../src/SwapProxy.sol";
 import {SimpleSwap} from "../src/SimpleSwap.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { IUniswapV2Router02 } from "v2-periphery/interfaces/IUniswapV2Router02.sol";
 import { IUniswapV2Pair } from "v2-core/interfaces/IUniswapV2Pair.sol";
 import { IUniswapV2Factory } from "v2-core/interfaces/IUniswapV2Factory.sol";
+import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 
 contract SimpleSwapTest is Test{
     address owner = makeAddr("owner");
@@ -16,7 +16,7 @@ contract SimpleSwapTest is Test{
 
     SimpleSwap public swap;
     SimpleSwap public proxySwap;
-    SwapProxy public proxy;
+    ERC1967Proxy public proxy;
     address public constant MTM=0x6F02055E3541DD74A1aBD8692116c22fFAFaDc5D;
     address public constant TST=0xf67041758D3B6e56D6fDafA5B32038302C3634DA;
     address public constant DAI=0x6B175474E89094C44Da98b954EedeAC495271d0F;
@@ -31,7 +31,7 @@ contract SimpleSwapTest is Test{
 
     function testSwapExactTokensForTokens() public{
         // for testSwapExactTokensForTokens() and testSwapTokensForExactTokens()
-        proxy = new SwapProxy(payable(address(swap)), abi.encodeWithSignature("initialize(address,address,address,address,uint256)", owner, MTM, TST, feeReceiver, 8000));
+        proxy = new ERC1967Proxy(payable(address(swap)), abi.encodeWithSignature("initialize(address,address,address,address,uint256)", owner, MTM, TST, feeReceiver, 8000));
         proxySwap = SimpleSwap(payable(address(proxy)));
         deal(MTM,user1,10 ether);
         vm.startPrank(user1);
@@ -47,7 +47,7 @@ contract SimpleSwapTest is Test{
 
     function testSwapTokensForExactTokens() public{
         // for testSwapExactTokensForTokens() and testSwapTokensForExactTokens()
-        proxy = new SwapProxy(payable(address(swap)), abi.encodeWithSignature("initialize(address,address,address,address,uint256)", owner, MTM, TST, feeReceiver,8000));
+        proxy = new ERC1967Proxy(payable(address(swap)), abi.encodeWithSignature("initialize(address,address,address,address,uint256)", owner, MTM, TST, feeReceiver,8000));
         proxySwap = SimpleSwap(payable(address(proxy)));
         deal(MTM,user1,10 ether);
         vm.startPrank(user1);
@@ -64,7 +64,7 @@ contract SimpleSwapTest is Test{
 
     function testSwapExactETHForTokens() public{
         // for testSwapExactETHForTokens() and swapETHForExactTokens() 
-        proxy = new SwapProxy(payable(address(swap)), abi.encodeWithSignature("initialize(address,address,address,address,uint256)", owner, WETH, DAI, feeReceiver, 8000));
+        proxy = new ERC1967Proxy(payable(address(swap)), abi.encodeWithSignature("initialize(address,address,address,address,uint256)", owner, WETH, DAI, feeReceiver, 8000));
         proxySwap = SimpleSwap(payable(address(proxy)));
         deal(user1,10 ether);
         vm.startPrank(user1);
@@ -79,7 +79,7 @@ contract SimpleSwapTest is Test{
 
     function testSwapETHForExactTokens() public{
         // for testSwapExactETHForTokens() and swapETHForExactTokens() 
-        proxy = new SwapProxy(payable(address(swap)), abi.encodeWithSignature("initialize(address,address,address,address,uint256)", owner, WETH, DAI, feeReceiver,8000));
+        proxy = new ERC1967Proxy(payable(address(swap)), abi.encodeWithSignature("initialize(address,address,address,address,uint256)", owner, WETH, DAI, feeReceiver,8000));
         proxySwap = SimpleSwap(payable(address(proxy)));
         deal(user1,10 ether);
         vm.startPrank(user1);
@@ -95,7 +95,7 @@ contract SimpleSwapTest is Test{
 
     function testSwapTokensForExactETH() public{
         //for testSwapTokensForExactETH() and testSwapExactTokensForETH()
-        proxy = new SwapProxy(payable(address(swap)), abi.encodeWithSignature("initialize(address,address,address,address,uint256)", owner, DAI, WETH, feeReceiver, 8000));
+        proxy = new ERC1967Proxy(payable(address(swap)), abi.encodeWithSignature("initialize(address,address,address,address,uint256)", owner, DAI, WETH, feeReceiver, 8000));
         proxySwap = SimpleSwap(payable(address(proxy)));
         deal(DAI,user1,5000 ether);
         vm.startPrank(user1);
@@ -112,7 +112,7 @@ contract SimpleSwapTest is Test{
 
     function testSwapExactTokensForETH() public{
         //for testSwapTokensForExactETH() and testSwapExactTokensForETH()
-        proxy = new SwapProxy(payable(address(swap)), abi.encodeWithSignature("initialize(address,address,address,address,uint256)", owner, DAI, WETH, feeReceiver, 8000));
+        proxy = new ERC1967Proxy(payable(address(swap)), abi.encodeWithSignature("initialize(address,address,address,address,uint256)", owner, DAI, WETH, feeReceiver, 8000));
         proxySwap = SimpleSwap(payable(address(proxy)));
         deal(DAI,user1,1000 ether);
         vm.startPrank(user1);

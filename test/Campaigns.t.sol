@@ -4,7 +4,7 @@ import {Test, console2} from "forge-std/Test.sol";
 import {QQToken} from "../src/QQToken.sol";
 import {Campaigns} from "../src/Campaigns.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {CampaignsProxy} from "../src/CampaignsProxy.sol";
+import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 
 contract CampaignsTest is Test{
     address owner = makeAddr("owner");
@@ -15,7 +15,8 @@ contract CampaignsTest is Test{
     QQToken public token;
     Campaigns public campaigns;
     Campaigns public proxyCampaigns;
-    CampaignsProxy public proxy;
+    ERC1967Proxy public proxy;
+    //CampaignsProxy public proxy;
     function setUp() public{
         vm.startPrank(owner);
 
@@ -23,7 +24,7 @@ contract CampaignsTest is Test{
         token.mint(user1, 100 ether);
 
         campaigns = new Campaigns(owner);
-        proxy = new CampaignsProxy(payable(address(campaigns)), abi.encodeWithSignature("initialize(address)", owner));
+        proxy = new ERC1967Proxy(payable(address(campaigns)), abi.encodeWithSignature("initialize(address)", owner));
         proxyCampaigns = Campaigns(payable(address(proxy)));
         vm.stopPrank();
     }

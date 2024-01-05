@@ -2,9 +2,9 @@
 pragma solidity ^0.8.19;
 
 import {Test, console2} from "forge-std/Test.sol";
-import {SharesProxy} from "../src/SharesProxy.sol";
 import {Shares} from "../src/Shares.sol";
 import {QQToken} from "../src/QQToken.sol";
+import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 
 contract SharesTest is Test{
     address owner = makeAddr("owner");
@@ -13,7 +13,7 @@ contract SharesTest is Test{
 
     Shares public shares;
     Shares public proxyShare;
-    SharesProxy public proxy;
+    ERC1967Proxy public proxy;
     QQToken public token;
     function setUp() public{
         deal(owner, 100 ether);
@@ -21,7 +21,7 @@ contract SharesTest is Test{
         deal(user1, 100 ether);
         vm.startPrank(owner);
         shares = new Shares(owner, "Rita", "RT");
-        proxy = new SharesProxy(address(shares), abi.encodeWithSignature("initialize(address,string,string,string,address,address,uint256)", owner, "Rita", "RT", "https://ipfs.io/ipfs/QmXeqeiCJNdnpZsvLLbh3PaPs5nSEpcP2xkhqcrDQhEioQ", owner, protocolFeeDestination, 1600));
+        proxy = new ERC1967Proxy(address(shares), abi.encodeWithSignature("initialize(address,string,string,string,address,address,uint256)", owner, "Rita", "RT", "https://ipfs.io/ipfs/QmXeqeiCJNdnpZsvLLbh3PaPs5nSEpcP2xkhqcrDQhEioQ", owner, protocolFeeDestination, 1600));
         proxyShare = Shares(address(proxy));
         
         token = new QQToken();
