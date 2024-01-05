@@ -12,7 +12,7 @@ import { IUniswapV2Pair } from "v2-core/interfaces/IUniswapV2Pair.sol";
 
 contract SimpleSwap is Context, Initializable, ReentrancyGuard{
     address private constant _ZERO_ADDRESS = 0x0000000000000000000000000000000000000000;
-    uint256 private constant _FEE_MOLECULAR = 1e12;
+    uint256 private immutable _FEE_MOLECULAR = 1e12;
 
     IUniswapV2Router02 public constant UNISWAP_V2_ROUTER =
     IUniswapV2Router02(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D);
@@ -73,7 +73,7 @@ contract SimpleSwap is Context, Initializable, ReentrancyGuard{
             block.timestamp + 10
         );
 
-        emit Swap(msg.sender, "swapExactTokensForTokens", srcToken, targetToken, amountIn, amountOutMin, fee);
+        emit Swap(msg.sender, "swapExactTokensForTokens", srcToken, targetToken, amountIn, returnAmount[0], fee);
 
         return returnAmount[1];
     }
@@ -103,7 +103,7 @@ contract SimpleSwap is Context, Initializable, ReentrancyGuard{
             block.timestamp + 10
         );
 
-        emit Swap(msg.sender, "swapTokensForExactTokens", srcToken, targetToken, totalAmount, amountOut, fee);
+        emit Swap(msg.sender, "swapTokensForExactTokens", srcToken, targetToken, totalAmount, returnAmount[0], fee);
 
         return returnAmount[0];
     }
@@ -129,7 +129,7 @@ contract SimpleSwap is Context, Initializable, ReentrancyGuard{
             block.timestamp + 10
         );
 
-        emit Swap(msg.sender, "swapExactETHForTokens", srcToken, targetToken, amountIn, amountOutMin, fee);
+        emit Swap(msg.sender, "swapExactETHForTokens", srcToken, targetToken, amountIn, returnAmount[0], fee);
 
         return returnAmount[1];
     }
@@ -153,7 +153,7 @@ contract SimpleSwap is Context, Initializable, ReentrancyGuard{
             msg.sender,
             block.timestamp + 10
         );
-        emit Swap(msg.sender, "swapETHForExactTokens", srcToken, targetToken, totalAmount, amountOut, fee);
+        emit Swap(msg.sender, "swapETHForExactTokens", srcToken, targetToken, totalAmount, returnAmount[0], fee);
         return returnAmount[0];
     }
 
@@ -180,7 +180,7 @@ contract SimpleSwap is Context, Initializable, ReentrancyGuard{
             block.timestamp + 10
         );
 
-        emit Swap(msg.sender, "swapTokensForExactETH", srcToken, targetToken, totalAmount, amountOut, fee);
+        emit Swap(msg.sender, "swapTokensForExactETH", srcToken, targetToken, totalAmount, returnAmount[0], fee);
 
         return returnAmount[0];
     }
@@ -209,7 +209,7 @@ contract SimpleSwap is Context, Initializable, ReentrancyGuard{
             block.timestamp + 10
         );
 
-        emit Swap(msg.sender, "swapExactTokensForETH", srcToken, targetToken, amountIn, amountOutMin, fee);
+        emit Swap(msg.sender, "swapExactTokensForETH", srcToken, targetToken, amountIn, returnAmount[0], fee);
 
         return returnAmount[1];
     }
