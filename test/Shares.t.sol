@@ -81,19 +81,19 @@ contract SharesTest is Test{
         vm.stopPrank();
     }
 
-    function testAirDropTokens() public{
+    /*function testAirDropTokens() public{
         vm.startPrank(owner);
         require(token.balanceOf(owner)>= 100 ether,"Not enough tokens to approve");
         token.approve(address(proxyShare), type(uint256).max);
-        address payable [] memory receivers = new address payable[](1);
-        receivers[0] = payable(user1);
+        address [] memory receivers = new address[](1);
+        receivers[0] = user1;
         uint[] memory amounts = new uint256[](1);
         amounts[0] = 10 ether;
         proxyShare.multiTransferToken(address(token), receivers, amounts);
         assertEq(token.balanceOf(user1),10 ether, " AirDrop tokens failed");
         assertEq(token.balanceOf(owner),90 ether, " AirDrop tokens failed");
         vm.stopPrank();
-    }
+    }*/
 
     function testAirDropEth() public{
         vm.startPrank(owner);

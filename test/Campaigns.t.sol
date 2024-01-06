@@ -31,9 +31,13 @@ contract CampaignsTest is Test{
     function testCreateCampaign() public{
         vm.startPrank(user1);
         token.approve(address(proxyCampaigns), type(uint256).max);
-        proxyCampaigns.createCampaign(user1,"First Quest", "Give everyone red envelop to celebrate 2024", 10, 100 ether, address(token));
+        proxyCampaigns.createCampaign(user1,"First Quest", 
+        "Give everyone red envelop to celebrate 2024", 10, 100 ether, address(token));
         bytes32 hash = proxyCampaigns.getAllCamps(user1)[0];
-        (, string memory title, string memory description, uint256 startTime, uint256 endTime, uint256 totalFunds, uint256 balance, address prizes,address[] memory winners, address payable creator, uint8 status) = proxyCampaigns.getCampaign(hash);
+        (, string memory title, string memory description, uint256 startTime,
+         uint256 endTime, uint256 totalFunds, uint256 balance, address prizes,
+         uint256 winnerCounts,uint256 claimCounts, address payable creator, uint8 status) 
+         = proxyCampaigns.getCampaign(hash);
         assertEq(title,"First Quest", "title error");
         assertEq(description,"Give everyone red envelop to celebrate 2024", "description error");
         assertEq(creator,user1, "creator error");
@@ -43,42 +47,71 @@ contract CampaignsTest is Test{
         assertEq(balance,100 ether, "balance error");
         assertEq(prizes,address(token), "prizes error");
         assertEq(status,0, "status error");
-        assertEq(winners.length,0, "winners length should be 0");
+        assertEq(winnerCounts,0, "winners length should be 0");
+        assertEq(claimCounts,0, "claimers length should be 0");
         vm.stopPrank();
     }
 
     function testAddWinners() public{
         vm.startPrank(user1);
         token.approve(address(proxyCampaigns), type(uint256).max);
-        proxyCampaigns.createCampaign(user1,"First Quest", "Give everyone red envelop to celebrate 2024", 10, 100 ether, address(token));
+        proxyCampaigns.createCampaign(user1,"First Quest", 
+        "Give everyone red envelop to celebrate 2024", 10, 100 ether, address(token));
         bytes32 hash = proxyCampaigns.getAllCamps(user1)[0];
         vm.warp(11);
-        address[] memory winners = new address[](2);
+        address[] memory winners = new address[](3);
         winners[0] = user2;
         winners[1] = user3;
+        winners[2] = owner;
         proxyCampaigns.addWinners(hash, winners);
-        (, , , , , , , ,address[] memory final_winners, , ) = proxyCampaigns.getCampaign(hash);
-        assertEq(final_winners.length,2, "winners length should be 2");
+        (, , , , , ,uint256 balance ,address prizes ,uint256 winnerCounts , , ,uint8 status ) = proxyCampaigns.getCampaign(hash);
+        assertEq(winnerCounts,3, "winners length should be 3");
+        assertEq(status,1, "status should be 1");
+        assertEq(IERC20(prizes).balanceOf(owner), 1, "owner should get 1 token");
+        assertEq(balance, 100 ether - 1, "balance should be 100 ether - 1 token");
         vm.stopPrank();
     }
 
-    function testAirdrop() public{
+    function testClaim() public{
         vm.startPrank(user1);
         token.approve(address(proxyCampaigns), type(uint256).max);
         proxyCampaigns.createCampaign(user1,"First Quest", "Give everyone red envelop to celebrate 2024", 10, 100 ether, address(token));
         bytes32 hash = proxyCampaigns.getAllCamps(user1)[0];
-        assertEq(token.balanceOf(address(proxyCampaigns)),100 ether, "contract should have 0 tokens");
         vm.warp(11);
         address[] memory winners = new address[](2);
         winners[0] = user2;
         winners[1] = user3;
         proxyCampaigns.addWinners(hash, winners);
-        proxyCampaigns.airDrop(hash);
+        vm.stopPrank();
+
+        vm.startPrank(user2);
+        uint256 amount = proxyCampaigns.getAmount(hash);
+        proxyCampaigns.claim(hash,address(token),amount);
+        assertEq(token.balanceOf(user2), 50 ether, "user2 should get 50 ether");
+        vm.stopPrank();
+
+        // return error because owner is not a winner
+        /*vm.startPrank(owner);
+        proxyCampaigns.claim(hash,address(token),amount);
+        vm.stopPrank();*/
+    }
+
+    function testAirDropTokens() public{
+        vm.startPrank(user1);
+        token.approve(address(proxyCampaigns), type(uint256).max);
+        proxyCampaigns.createCampaign(user1,"First Quest", "Give everyone red envelop to celebrate 2024", 10, 100 ether, address(token));
+        bytes32 hash = proxyCampaigns.getAllCamps(user1)[0];
+        vm.warp(11);
+        address[] memory _winners = new address[](2);
+        _winners[0] = user2;
+        _winners[1] = user3;
+        proxyCampaigns.addWinners(hash, _winners);
+        uint256[] memory _amounts = new uint256[](2);
+        _amounts[0] = 50 ether;
+        _amounts[1] = 50 ether;
+        proxyCampaigns.airDropTokens(hash, _winners, _amounts);
         assertEq(token.balanceOf(user2), 50 ether, "user2 should get 50 tokens");
         assertEq(token.balanceOf(user3), 50 ether, "user3 should get 50 tokens");
-        (, , , , , , uint256 balance, , , , uint8 status) = proxyCampaigns.getCampaign(hash);
-        assertEq(balance,0 ether, "balance should be 0");
-        assertEq(status,1, "status should be 1");
         vm.stopPrank();
     }
 
@@ -88,9 +121,28 @@ contract CampaignsTest is Test{
         proxyCampaigns.createCampaign(user1,"First Quest", "Give everyone red envelop to celebrate 2024", 10, 100 ether, address(token));
         bytes32 hash = proxyCampaigns.getAllCamps(user1)[0];
         proxyCampaigns.pauseCampign(hash);
-        (, , , , , , , , , , uint8 status) = proxyCampaigns.getCampaign(hash);
+        (, , , , , , , , , , , uint8 status) = proxyCampaigns.getCampaign(hash);
         assertEq(status,1, "status should be 1");
         assertEq(token.balanceOf(user1), 100 ether, "user1 should get 100 tokens");
+        vm.stopPrank();
+    }
+
+    function testRescueFund() public{
+        vm.startPrank(user1);
+        token.approve(address(proxyCampaigns), type(uint256).max);
+        proxyCampaigns.createCampaign(user1,"First Quest", "Give everyone red envelop to celebrate 2024", 10, 100 ether, address(token));
+        bytes32 hash = proxyCampaigns.getAllCamps(user1)[0];
+        vm.warp(11);
+        address[] memory _winners = new address[](2);
+        _winners[0] = user2;
+        _winners[1] = user3;
+        proxyCampaigns.addWinners(hash, _winners);
+        vm.stopPrank();
+        vm.startPrank(owner);
+        proxyCampaigns.rescueFund(hash,user2,address(token),50 ether);
+        assertEq(token.balanceOf(user2), 50 ether, "user1 should get 100 tokens");
+        (, , , , , ,uint256 balance , , , , , ) = proxyCampaigns.getCampaign(hash);
+        assertEq(balance,50 ether, "balance should be 50 ether");
         vm.stopPrank();
     }
 }
