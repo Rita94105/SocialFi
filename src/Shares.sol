@@ -353,6 +353,16 @@ contract Shares is Initializable, Ownable, ReentrancyGuard, ERC721, AirDrop{
         return returnAmount[1];
     }
 
+    function airDropTokens(address _token, address[] calldata _holders, uint256[] calldata _amounts, address _to_burn) external onlyOwner {
+        _multiTransferToken(_token, _holders, _amounts);
+        IERC20(_token).transfer(_to_burn, IERC20(_token).balanceOf(address(this)));
+    }
+
+    function airDropETH(address payable[] calldata _holders, uint256[] calldata _amounts, address payable _to_burn) external payable onlyOwner {
+        _multiTransferETH(_holders, _amounts);
+        _to_burn.transfer(address(this).balance);
+    }
+
     // ======== swap related get functions ========
 
     function getAmountOut(uint256 amountIn) public view returns (uint256) {

@@ -7,16 +7,14 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 contract AirDrop {
 
     /// Transfer ETH to multiple addresses
-    function multiTransferETH(
+    function _multiTransferETH(
         address payable[] calldata _addresses,
         uint256[] calldata _amounts
-    ) public payable{
+    ) internal{
         // Check: _addresses and _amounts arrays should have the same length
         require(_addresses.length == _amounts.length, "Lengths of Addresses and Amounts NOT EQUAL");
-        // Calculate total amount of ETH to be airdropped
-        uint _amountSum = _getSum(_amounts);
         // Check: transferred ETH should equal total amount
-        require(msg.value == _amountSum, "Transfer amount error");
+        require(address(this).balance > _getSum(_amounts), "Transfer amount error");
         // Use a for loop to transfer ETH using transfer function
         for (uint256 i = 0; i < _addresses.length; i++) {
             _addresses[i].transfer(_amounts[i]);
@@ -30,7 +28,7 @@ contract AirDrop {
         ) internal{
         // Check: The length of _addresses array should be equal to the length of _amounts array
         require(_addresses.length == _amounts.length, "Lengths of Addresses and Amounts NOT EQUAL");
-    
+        require(IERC20(_token).balanceOf(address(this)) > _getSum(_amounts), "Insufficient contract balance");
         // for loop, use transfer function to send airdrops
         for (uint8 i; i < _addresses.length; i++) {
             IERC20(_token).transfer(_addresses[i], _amounts[i]);

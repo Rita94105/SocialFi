@@ -14,6 +14,8 @@ contract SharesTest is Test{
     address owner = makeAddr("owner");
     address protocolFeeDestination = makeAddr("protocolFeeDestination");
     address user1 = makeAddr("user1");
+    address user2 = makeAddr("user2");
+    address to_burn = makeAddr("to_burn");
 
     Shares public shares;
     Shares public proxyShare;
@@ -39,6 +41,7 @@ contract SharesTest is Test{
         deal(owner, 100 ether);
         deal(protocolFeeDestination, 100 ether);
         deal(user1, 100 ether);
+        deal(user2, 100 ether);
     }
 
     function testMintFirst() public{
@@ -246,24 +249,95 @@ contract SharesTest is Test{
         uint256 fee = 900 ether * 8000 / 1e12;
         IERC20(MTM).approve(address(proxyShare), type(uint256).max);
         proxyShare.swapExactTokensForTokens(900 ether, 0);
-        assertEq(fee, IERC20(MTM).balanceOf(address(proxyShare)), "fee not equal");
         uint256 snapshot = vm.snapshot();
         vm.warp(12345);
         proxyShare.swapExactTokensForTokens(900 ether, 0);
         vm.revertTo(snapshot);
         assertEq(fee, IERC20(MTM).balanceOf(address(proxyShare)), "fee not equal");
+
         vm.stopPrank();
     }
 
-    /*function testAirDropEth() public{
+    function testSnapShotAndAirDropTokens() public{
         vm.startPrank(owner);
-        address payable[] memory receivers = new address payable[](1);
-        receivers[0]= payable(user1);
-        uint256[] memory amounts = new uint256[](1);
-        amounts[0] = 10 ether;
-        proxyShare.multiTransferETH{value:10 ether}(receivers, amounts);
-        assertEq(user1.balance,110 ether,"AirDrop ETH failed");
-        assertEq(owner.balance,90 ether,"AirDrop ETH failed");
+        proxy = new ERC1967Proxy(address(shares),
+            abi.encodeWithSignature("initialize(address,string,string,string,address,address,uint256,address,address,uint256)",
+            owner, "Rita", "RT", 
+            "https://ipfs.io/ipfs/QmXeqeiCJNdnpZsvLLbh3PaPs5nSEpcP2xkhqcrDQhEioQ", 
+            owner, protocolFeeDestination, 1600, MTM, TST, 8000));
+        proxyShare = Shares(payable(address(proxy)));
+        proxyShare.mintShare();
         vm.stopPrank();
-    }*/
+
+        vm.startPrank(user1);
+        proxyShare.mintShare{value: proxyShare.getBuyPriceAfterFee()}();
+        proxyShare.mintShare{value: proxyShare.getBuyPriceAfterFee()}();
+        vm.stopPrank();
+
+        deal(MTM,user2,10000 ether);
+        vm.startPrank(user2);
+        uint256 fee = 900 ether * 8000 / 1e12;
+        IERC20(MTM).approve(address(proxyShare), type(uint256).max);
+        proxyShare.swapExactTokensForTokens(900 ether, 0);
+        vm.stopPrank();
+
+        uint256 snapshot = vm.snapshot();
+        vm.startPrank(owner);
+        address[] memory holders = new address[](3);
+        holders[0] = owner;
+        holders[1] = user1;
+        holders[2] = user1;
+        uint256 MTMbalance = IERC20(MTM).balanceOf(address(proxyShare));
+        uint256[] memory amounts = new uint256[](3);
+        amounts[0] = MTMbalance/5;
+        amounts[1] = MTMbalance*3/5/2;
+        amounts[2] = MTMbalance*3/5/2;
+        proxyShare.airDropTokens(MTM, holders, amounts, to_burn);
+        assertEq(MTMbalance*3/5,IERC20(MTM).balanceOf(user1),"MTMbalance not equal");
+        assertEq(MTMbalance/5,IERC20(MTM).balanceOf(owner),"MTMbalance not equal");
+        assertEq(MTMbalance/5,IERC20(MTM).balanceOf(to_burn),"MTMbalance not equal");
+        vm.stopPrank();
+    }
+        
+
+    function testAirDropEth() public{
+        vm.startPrank(owner);
+        proxy = new ERC1967Proxy(address(shares),
+        abi.encodeWithSignature("initialize(address,string,string,string,address,address,uint256,address,address,uint256)",
+            owner, "Rita", "RT", 
+            "https://ipfs.io/ipfs/QmXeqeiCJNdnpZsvLLbh3PaPs5nSEpcP2xkhqcrDQhEioQ", 
+            owner, protocolFeeDestination, 1600, WETH, DAI, 8000));
+        proxyShare = Shares(payable(address(proxy)));
+        proxyShare.mintShare();
+        vm.stopPrank();
+
+        vm.startPrank(user1);
+        proxyShare.mintShare{value: proxyShare.getBuyPriceAfterFee()}();
+        proxyShare.mintShare{value: proxyShare.getBuyPriceAfterFee()}();
+        vm.stopPrank();
+
+        deal(user2, 10000 ether);
+        vm.startPrank(user2);
+        proxyShare.swapExactETHForTokens{value:9000 ether}(0);
+        vm.stopPrank();
+
+        uint256 snapshot = vm.snapshot();
+        uint256 owner_balance = owner.balance;
+        uint256 user1_balance = user1.balance;
+        vm.startPrank(owner);
+        address payable[] memory holders = new address payable[](3);
+        holders[0] = payable(owner);
+        holders[1] = payable(user1);
+        holders[2] = payable(user1);
+        uint256 ETHbalance = address(proxyShare).balance;
+        uint256[] memory amounts = new uint256[](3);
+        amounts[0] = ETHbalance/5;
+        amounts[1] = ETHbalance*3/5/2;
+        amounts[2] = ETHbalance*3/5/2;
+        proxyShare.airDropETH(holders, amounts,payable(to_burn));
+        assertEq(user1_balance + ETHbalance*3/5, user1.balance, "ETHbalance not equal");
+        assertEq(owner_balance + ETHbalance/5, owner.balance, "ETHbalance not equal");
+        assertEq(ETHbalance/5, to_burn.balance, "ETHbalance not equal");
+        vm.stopPrank();
+    }
 }

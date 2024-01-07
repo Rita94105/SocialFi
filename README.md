@@ -1,4 +1,4 @@
-# [SocialFi improvement](https://gamma.app/embed/HiSocialFi-9atbqhljmp24s5r?mode=doc)
+# [HiSocialFi](https://gamma.app/embed/HiSocialFi-9atbqhljmp24s5r?mode=doc)
 
 HiSocialFi is breaking through the challenges of Web3, leading users into a world filled with promise and potential. It seamlessly integrates web2 and web3, enhancing convenience, and unlocking innovative economic models.
 
@@ -28,11 +28,9 @@ HiSocialFi is breaking through the challenges of Web3, leading users into a worl
 
   2. People can buy Shares which are combined with Defi-swap pool, getting share profits from the income of transaction fees.
 
-  As a result, more people would like to try and join to web3.
+- Easy access to Web3
 
-- create private channel
-
-  People can create private channel and sell Shares to others, and others can get some news in this channel and even some profits which depends on projects.
+  Users can easily engage in transactions such as issuing NFTs, managing portfolios, airdrops, coin exchanges, profit-sharing, and more.Users can easily engage in transactions such as issuing NFTs, managing portfolios, airdrops, coin exchanges, profit-sharing, and more.
 
 ## Implementation
 
@@ -44,11 +42,9 @@ HiSocialFi is breaking through the challenges of Web3, leading users into a worl
 
 - Users are limited to minting one NFT at a time, and there is no upper limit on the total issuance.
 
-- The concept of "share" can be categorized into two types:
-  - Defi-Pool
-    People can get share profit from the income of transaction fee.
-  - private channel
-    People can get news and gifts from the Projects.
+- Each Shares contract incorporates Uniswap trading pair coin exchange functionality.
+
+- During each quarterly snapshot, 60% of the airdrop profit-sharing fees go to the holders, 20% to the NFT issuers, and the remaining 20% is converted into QQ Tokens and burned.
 
 2. Campaigns
 
@@ -58,13 +54,13 @@ HiSocialFi is breaking through the challenges of Web3, leading users into a worl
 
 - A platform token designed to reward both event organizers and participants.
 
-- The platform will periodically distribute platform tokens as incentives for user engagement. In future plans, creators of private channels will be required to use QQToken for payment, and additional platform applications will be developed progressively.
+- The platform will periodically distribute platform tokens as incentives for user engagement. In future plans, creations of Campaigns and Shares NFTs will be required to use QQToken for payment, and additional platform applications will be developed progressively.
 
-4. SimpleSwap
+4. Airdrop
 
-- Special users can create SimpleSwap with pair tokens for users to swap and earn fee profit.
+- Campaigns and Shares contracts both inherit from the Airdrop contract.
 
-- Each SimpleSwap can match one Share NFT to sell, and owner of Share can share fee profit from the feeReceiver.
+- Providing two withdrawal methods: a list-based approach with specified amounts and addresses, or users can independently claim their rewards.
 
 ## WorkFlow
 
