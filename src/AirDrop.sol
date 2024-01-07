@@ -24,24 +24,17 @@ contract AirDrop {
     }
 
     function _multiTransferToken(
-    address _token,
-    address[] calldata _addresses,
-    uint256[] calldata _amounts
-    ) internal{
-    // Check: The length of _addresses array should be equal to the length of _amounts array
-    require(_addresses.length == _amounts.length, "Lengths of Addresses and Amounts NOT EQUAL");
+        address _token,
+        address[] calldata _addresses,
+        uint256[] calldata _amounts
+        ) internal{
+        // Check: The length of _addresses array should be equal to the length of _amounts array
+        require(_addresses.length == _amounts.length, "Lengths of Addresses and Amounts NOT EQUAL");
     
-    // for loop, use transferFrom function to send airdrops
-    for (uint8 i; i < _addresses.length; i++) {
-        IERC20(_token).transfer(_addresses[i], _amounts[i]);
-    }
-}
-
-    // sum function for arrays
-    function _getSum(uint256[] calldata _arr) internal pure returns(uint sum)
-    {
-        for(uint i = 0; i < _arr.length; i++)
-            sum = sum + _arr[i];
+        // for loop, use transfer function to send airdrops
+        for (uint8 i; i < _addresses.length; i++) {
+            IERC20(_token).transfer(_addresses[i], _amounts[i]);
+        }
     }
 
     // users can withdraw tokens approved by the contract
@@ -50,6 +43,13 @@ contract AirDrop {
     ) internal{
         //IERC20(_token).transferFrom(address(this), msg.sender,_amount);
         IERC20(_token).transfer(msg.sender, _amount);
+    }
+
+    // sum function for arrays
+    function _getSum(uint256[] calldata _arr) internal pure returns(uint sum)
+    {
+        for(uint i = 0; i < _arr.length; i++)
+            sum = sum + _arr[i];
     }
 
 }
