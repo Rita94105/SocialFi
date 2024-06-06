@@ -1,4 +1,4 @@
-# [HiSocialFi](https://gamma.app/embed/HiSocialFi-9atbqhljmp24s5r?mode=doc)
+# [HiSocialFi](https://gamma.app/embed/HiSocialFi-9atbqhljmp24s5r?mode=doc](https://hisocialfi-on5j14e.gamma.site/)
 
 HiSocialFi is breaking through the challenges of Web3, leading users into a world filled with promise and potential. It seamlessly integrates web2 and web3, enhancing convenience, and unlocking innovative economic models.
 
